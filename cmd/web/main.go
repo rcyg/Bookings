@@ -37,7 +37,7 @@ func main() {
 	}
 
 	app.TemplateCache = tc //set the template cache
-	app.UserCache = false  //set UserCache to false
+	app.UseCache = false   //set UserCache to false
 
 	repo := handlers.NewRepo(&app) //deliver the configuration to handler
 	render.NewTemplates(&app)      //deliver the configuration to render
