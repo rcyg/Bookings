@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Bookings/pkg/config"
-	"Bookings/pkg/handlers"
-	"Bookings/pkg/render"
+	"Bookings/internal/config"
+	"Bookings/internal/handlers"
+	"Bookings/internal/render"
 	"fmt"
 	"log"
 	"net/http"
