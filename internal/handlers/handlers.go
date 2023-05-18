@@ -96,6 +96,8 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+	m.App.Session.Put(r.Context(), "reservation", reservation)       //put the reservation data into context
+	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther) //redirect to reservation page
 }
 
 // Generals renders the room page
@@ -145,4 +147,23 @@ func (m *Repository) AvailabilityJSON(w http.ResponseWriter, r *http.Request) {
 // Contact renders the contact page
 func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
+}
+
+func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
+	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation) //get reservation details from seesoin using Get method
+	if !ok {
+		log.Println("can't get item from session")
+		m.App.Session.Put(r.Context(), "error", "Can't get reservation from session")
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect) //redirect to the home page
+		return
+	}
+	m.App.Session.Remove(r.Context(), "reservation") //remove the reservation data
+
+	data := make(map[string]any)
+	data["reservation"] = reservation
+
+	//inject the data to the template files using RenderTemplate
+	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
+		Data: data,
+	})
 }
