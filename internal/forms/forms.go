@@ -19,7 +19,7 @@ func (f *Form) Valid() bool {
 	return len(f.Errors) == 0
 }
 
-// New initializes a form struct
+// New initializes a empty form struct
 func New(data url.Values) *Form {
 	return &Form{
 		data,
@@ -27,7 +27,7 @@ func New(data url.Values) *Form {
 	}
 }
 
-// Required checks for required fields
+// Required checks for required fields, and add errors if is blanck
 func (f *Form) Required(fields ...string) {
 	for _, field := range fields {
 		value := f.Get(field)
@@ -37,7 +37,7 @@ func (f *Form) Required(fields ...string) {
 	}
 }
 
-// Has checks if form field is in post and not empty
+// Has checks whether the form has the given field, if not, return false
 func (f *Form) Has(field string) bool {
 	x := f.Get(field)
 	if x == "" {
@@ -46,7 +46,7 @@ func (f *Form) Has(field string) bool {
 	return true
 }
 
-// MinLength check for minimum length
+// MinLength check for minimum length, if not satisfy, adds error to it
 func (f *Form) MinLength(field string, length int) bool {
 	x := f.Get(field)
 	if len(x) < length {
