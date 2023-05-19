@@ -3,12 +3,14 @@ package main
 import (
 	"Bookings/internal/config"
 	"Bookings/internal/handlers"
+	"Bookings/internal/helpers"
 	"Bookings/internal/models"
 	"Bookings/internal/render"
 	"encoding/gob"
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -18,6 +20,8 @@ const portNumber = ":8080"
 
 var app config.AppConfig //declare a config
 var session *scs.SessionManager
+var infoLog *log.Logger
+var errorLog *log.Logger
 
 // main is the main application function
 func main() {
@@ -42,7 +46,13 @@ func run() error {
 	//register the reservation data
 	gob.Register(models.Reservation{})
 	//change this to true when in production
-	app.InProduction = true
+	app.InProduction = false
+	//infoLog
+	infoLog = log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
+	app.InfoLog = infoLog
+	//errorLog
+	errorLog = log.New(os.Stdout, "ERROR\t", log.Ldate|log.Ltime|log.Lshortfile)
+	app.ErrorLog = errorLog
 
 	// set up the session
 	session = scs.New()
@@ -66,6 +76,7 @@ func run() error {
 	render.NewTemplates(&app)      //deliver the configuration to render
 
 	handlers.NewHandlers(repo) //create a new handler
+	helpers.NewHelpers(&app)   //deliver app configuration to helpers
 
 	return nil
 }
