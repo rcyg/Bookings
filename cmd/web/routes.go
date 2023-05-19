@@ -10,8 +10,11 @@ import (
 )
 
 func routes(app *config.AppConfig) http.Handler {
-	mux := chi.NewRouter()
-
+	mux := chi.NewRouter() //using chi package for the router
+	//Use all the middleware
+	//Recoverer recover from panic
+	//NoSurf enables CSRF Token
+	//SessionLoad enables automatic session load and save
 	mux.Use(middleware.Recoverer)
 	mux.Use(NoSurf)
 	mux.Use(SessionLoad)
@@ -31,8 +34,9 @@ func routes(app *config.AppConfig) http.Handler {
 	mux.Post("/make-reservation", handlers.Repo.PostReservation)
 	mux.Get("/reservation-summary", handlers.Repo.ReservationSummary)
 
-	fileServer := http.FileServer(http.Dir("./static/"))
-	mux.Handle("/static/*", http.StripPrefix("/static", fileServer))
+	fileServer := http.FileServer(http.Dir("./static/"))             //initialize a file server
+	mux.Handle("/static/*", http.StripPrefix("/static", fileServer)) //handle the file server
+	//!IMPORTANT it is necessarily using the StripPrefix method to direct the file server to the right path
 
 	return mux
 }
