@@ -14,7 +14,7 @@ import (
 // Repo the repository used by the handlers
 var Repo *Repository
 
-// Repository is the repository type
+// Repository is the repository type, includes the app configuration data
 type Repository struct {
 	App *config.AppConfig
 }
@@ -43,25 +43,25 @@ func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
 
 // Reservation renders the make a reservation page and displays form
 func (m *Repository) Reservation(w http.ResponseWriter, r *http.Request) {
-	var emptyReservation models.Reservation
+	var emptyReservation models.Reservation //declare a models.Reservation data type for further data delivery
 	data := make(map[string]interface{})
 	data["reservation"] = emptyReservation
 
 	render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
-		Form: forms.New(nil),
+		Form: forms.New(nil), //actually a empty form
 		Data: data,
 	})
 }
 
 // PostReservation handles the posting of a reservation form
 func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
-	err := r.ParseForm()
-	if err != nil {
+	err := r.ParseForm() //populate the r.PostForm
+	if err != nil {      //if any, must be a ServerError
 		helpers.ServerError(w, err)
 		return
 	}
 
-	reservation := models.Reservation{
+	reservation := models.Reservation{ //data
 		FirstName: r.Form.Get("first_name"),
 		LastName:  r.Form.Get("last_name"),
 		Email:     r.Form.Get("email"),
@@ -74,11 +74,11 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 	form.MinLength("first_name", 3)
 	form.IsEmail("email")
 
-	if !form.Valid() {
+	if !form.Valid() { //the form is invalid
 		data := make(map[string]interface{})
 		data["reservation"] = reservation
 		render.RenderTemplate(w, r, "make-reservation.page.tmpl", &models.TemplateData{
-			Form: form,
+			Form: form, //using the previous data to render the page
 			Data: data,
 		})
 		return
@@ -137,6 +137,7 @@ func (m *Repository) Contact(w http.ResponseWriter, r *http.Request) {
 	render.RenderTemplate(w, r, "contact.page.tmpl", &models.TemplateData{})
 }
 
+// ReservationSummary shows the reservation details using session management
 func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) {
 	reservation, ok := m.App.Session.Get(r.Context(), "reservation").(models.Reservation) //get reservation details from seesoin using Get method
 	if !ok {
@@ -148,7 +149,7 @@ func (m *Repository) ReservationSummary(w http.ResponseWriter, r *http.Request) 
 	m.App.Session.Remove(r.Context(), "reservation") //remove the reservation data
 
 	data := make(map[string]any)
-	data["reservation"] = reservation
+	data["reservation"] = reservation //populate the data for rendering
 
 	//inject the data to the template files using RenderTemplate
 	render.RenderTemplate(w, r, "reservation-summary.page.tmpl", &models.TemplateData{
