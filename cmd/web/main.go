@@ -45,8 +45,13 @@ func main() {
 }
 
 func run() (*driver.DB, error) {
-	// !IMPORTANT register the reservation data before using it
+	// !IMPORTANT register the data type before you use  it
 	gob.Register(models.Reservation{})
+	gob.Register(models.User{})
+	gob.Register(models.Restriction{})
+	gob.Register(models.Room{})
+	gob.Register(models.RoomRestriction{})
+
 	//change this to true when in production
 	app.InProduction = false
 	//infoLog
@@ -83,7 +88,7 @@ func run() (*driver.DB, error) {
 	app.UseCache = false   //set UserCache to false
 
 	repo := handlers.NewRepo(&app, db) //deliver the configuration to handler
-	render.NewTemplates(&app)          //deliver the configuration to render
+	render.NewRender(&app)             //deliver the configuration to render
 
 	handlers.NewHandlers(repo) //create a new handler
 	helpers.NewHelpers(&app)   //deliver app configuration to helpers
