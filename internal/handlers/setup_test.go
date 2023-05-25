@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/alexedwards/scs/v2"
@@ -25,13 +26,11 @@ var app config.AppConfig
 var session *scs.SessionManager
 var pathToTemplates = "./../../templates"
 
-func getRoutes() http.Handler {
-
+func TestMain(m *testing.M) {
 	//register the reservation data
 	gob.Register(models.Reservation{})
 	//change this to true when in production
 	app.InProduction = true
-
 	//infoLog
 	infoLog := log.New(os.Stdout, "INFO\t", log.Ldate|log.Ltime)
 	app.InfoLog = infoLog
@@ -52,13 +51,17 @@ func getRoutes() http.Handler {
 		log.Fatal("cannot create template cache")
 	}
 
-	app.TemplateCache = tc //set the template cache
-	app.UseCache = true    //set UserCache to false
+	app.TemplateCache = tc    //set the template cache
+	app.UseCache = true       //set UserCache to false
+	repo := NewTestRepo(&app) //deliver the configuration to handler
+	NewHandlers(repo)         //create a new handler
+	render.NewRender(&app)    //deliver the configuration to render
 
-	repo := NewRepo(&app)  //deliver the configuration to handler
-	render.NewRender(&app) //deliver the configuration to render
+	os.Exit(m.Run())
+}
 
-	NewHandlers(repo) //create a new handler
+func getRoutes() http.Handler {
+
 	mux := chi.NewRouter()
 
 	mux.Use(middleware.Recoverer)
