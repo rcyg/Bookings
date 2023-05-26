@@ -11,6 +11,7 @@ import (
 	"Bookings/internal/repository/dbrepo"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -153,6 +154,35 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 		return
 	}
+	// sent notification - first to guest
+
+	htmlMessage := fmt.Sprintf(`
+		<strong>Reservation Confirmation</strong><br>
+		Dear %s:, <br>
+		This is to confirm your reservation from %s to %s
+	`, reservation.FirstName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
+	msg := models.MailData{
+		To:       reservation.Email,
+		From:     "me@here.com",
+		Subject:  "Reservation Confirmation",
+		Content:  htmlMessage,
+		Template: "basic.html",
+	}
+
+	m.App.MailChan <- msg
+	// sending reservation notification to the property owner
+	htmlMessage = fmt.Sprintf(`
+		<strong>Reservation Notification</strong><br>
+		A reservation has been made for %s from %s to %s
+	`, reservation.FirstName, reservation.StartDate.Format("2006-01-02"), reservation.EndDate.Format("2006-01-02"))
+	msg = models.MailData{
+		To:       "me@here.com",
+		From:     "me@here.com",
+		Subject:  "Reservation Notification",
+		Content:  htmlMessage,
+		Template: "basic.html",
+	}
+	m.App.MailChan <- msg
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)       //put the reservation data into context
 	http.Redirect(w, r, "/reservation-summary", http.StatusSeeOther) //redirect to reservation page
