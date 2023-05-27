@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Bookings/internal/helpers"
 	"net/http"
 
 	"github.com/justinas/nosurf"
@@ -24,4 +25,15 @@ func SessionLoad(next http.Handler) http.Handler {
 	return session.LoadAndSave(next)
 	//LoadAndSave method is actually a middleware provided by scs package
 	//which enables automatic loads and saves for session every single request
+}
+
+func Auth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !helpers.IsAuthenticate(r) {
+			session.Put(r.Context(), "error", "Log in first!")
+			http.Redirect(w, r, "/user/login", http.StatusSeeOther)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

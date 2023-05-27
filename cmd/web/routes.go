@@ -38,10 +38,16 @@ func routes(app *config.AppConfig) http.Handler {
 
 	mux.Get("/user/login", handlers.Repo.ShowLogin)
 	mux.Post("/user/login", handlers.Repo.PostShowLogin)
+	mux.Get("/user/logout", handlers.Repo.Logout)
 
 	fileServer := http.FileServer(http.Dir("./static/"))             //initialize a file server
 	mux.Handle("/static/*", http.StripPrefix("/static", fileServer)) //handle the file server
 	//!IMPORTANT it is necessarily using the StripPrefix method to direct the file server to the right path
+
+	mux.Route("/admin", func(mux chi.Router) {
+		mux.Use(Auth)
+		mux.Get("/dashboard", handlers.Repo.AdminDashboard)
+	})
 
 	return mux
 }
