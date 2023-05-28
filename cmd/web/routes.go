@@ -45,7 +45,7 @@ func routes(app *config.AppConfig) http.Handler {
 	//!IMPORTANT it is necessarily using the StripPrefix method to direct the file server to the right path
 
 	mux.Route("/admin", func(mux chi.Router) {
-		mux.Use(Auth)
+		// mux.Use(Auth)
 		mux.Get("/dashboard", handlers.Repo.AdminDashboard)
 		mux.Get("/reservations-new", handlers.Repo.AdminNewReservations)
 		mux.Get("/reservations-all", handlers.Repo.AdminAllReservations)
