@@ -14,6 +14,7 @@ import (
 )
 
 var functions = template.FuncMap{}
+
 var app *config.AppConfig
 var pathToTemplates = "./templates"
 
