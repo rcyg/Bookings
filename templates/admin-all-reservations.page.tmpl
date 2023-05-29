@@ -1,10 +1,10 @@
-{{template "admin" .}}
-{{define "css"}}<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" type="text/css">
+{{define "css"}}
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/mobius1/vanilla-Datatables@latest/vanilla-dataTables.min.css">
 {{ end }}
+{{template "admin" .}}
 {{define "page-title"}}
 All Reservations
 {{ end }}
-
 {{define "content"}}
 <div class="col-md-12">
   {{$res := index .Data "reservations"}}
@@ -38,12 +38,11 @@ All Reservations
   </table>
 </div>
 {{ end }}
+
 {{define "js"}}
-<script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest" type="text/javascript"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const dataTable = new simpleDatatables.DataTable("#all-res" )
-})
-    
+    var myTable = document.querySelector("#all-res");
+var dataTable = new DataTable(myTable);
+
 </script>
 {{ end }}

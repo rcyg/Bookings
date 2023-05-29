@@ -1,8 +1,10 @@
-{{template "admin" .}} {{define "css"
-}}<link
-  href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css"
+{{template "admin" .}}
+{{define "css"
+}}
+<link
   rel="stylesheet"
   type="text/css"
+  href="https://cdn.jsdelivr.net/gh/mobius1/vanilla-Datatables@latest/vanilla-dataTables.min.css"
 />
 {{ end }}
 {{define "page-title"}}
@@ -32,8 +34,8 @@ New Reservations
           </a>
         </td>
         <td>{{.Room.RoomName}}</td>
-        <td>{{ humanDate  .StartDate }}</td>
-        <td>{{ humanDate  .EndDate }}</td>
+        <td>{{ humanDate .StartDate }}</td>
+        <td>{{ humanDate .EndDate }}</td>
       </tr>
       {{
         end
@@ -43,13 +45,8 @@ New Reservations
 </div>
 {{ end }}
 {{define "js"}}
-<script
-  src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"
-  type="text/javascript"
-></script>
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const dataTable = new simpleDatatables.DataTable("#new-res");
-  });
+    var myTable = document.querySelector("#new-res");
+var dataTable = new DataTable(myTable);
 </script>
 {{ end }}
