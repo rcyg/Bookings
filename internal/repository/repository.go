@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// DataBaseRepo is a interface that includes the collection of functions that
+// a database repository should achieve
 type DatabaseRepo interface {
 	AllUsers() bool
 	InsertReservation(res models.Reservation) (int, error)
@@ -18,4 +20,7 @@ type DatabaseRepo interface {
 	AllReservations() ([]models.Reservation, error)
 	AllNewReservations() ([]models.Reservation, error)
 	GetReservationByID(id int) (models.Reservation, error)
+	UpdateReseravtion(u models.Reservation) error
+	DeleteReservation(id int) error
+	UpdateProcessedForReservation(id, processed int) error
 }
